@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>一封信</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  
+  /* 背景黑色 */
+  body {
+    display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(120% 100% at 50% 0%, #222222 0%, #111111 50%, #000000 100%);
+    overflow: hidden; -webkit-font-smoothing: antialiased;
+  }
+
+  .scene { position: relative; width: 300px; height: 200px; }
+
+  /* 微弱的白光 */
+  .scene::before {
+    content: ''; position: absolute; left: 50%; top: 50%;
+    width: 440px; height: 440px; transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.08), transparent 68%);
+    z-index: -1; pointer-events: none;
+  }
+
+  .envelope {
+    position: relative; width: 100%; height: 100%;
+    perspective: 900px; cursor: pointer; outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* 信封背板白色 */
+  .env-back {
+    position: absolute; inset: 0;
+    background: linear-gradient(165deg, #ffffff 0%, #e6e6e6 100%);
+    box-shadow: 0 0 40px rgba(255, 255, 255, 0.15), 0 20px 44px -16px rgba(0, 0, 0, 0.8);
+    z-index: 1; transition: box-shadow 0.45s ease;
+  }
+
+  .envelope:hover .env-back {
+    box-shadow: 0 0 60px rgba(255, 255, 255, 0.25), 0 26px 54px -16px rgba(0, 0, 0, 0.9);
+  }
+
+  /* 信封正面口袋白色 */
+  .pocket {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, #ffffff 0%, #d9d9d9 100%);
+    clip-path: polygon(0 40%, 100% 40%, 100% 100%, 0 100%);
+    -webkit-clip-path: polygon(0 40%, 100% 40%, 100% 100%, 0 100%);
+    box-shadow: inset 0 3px 12px rgba(0, 0, 0, 0.06);
+    z-index: 3;
+  }
+
+  /* 信封盖白色 */
+  .flap {
+    position: absolute; top: 0; left: 0; width: 100%; height: 96px;
+    background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    -webkit-clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: 50% 0; transform: rotateX(0deg);
+    transition: transform 0.72s cubic-bezier(0.65, 0.05, 0.36, 1), z-index 0s;
+    z-index: 5;
+  }
+
+  .envelope.open .flap {
+    transform: rotateX(-180deg); z-index: 0;
+    transition: transform 0.72s cubic-bezier(0.65, 0.05, 0.36, 1), z-index 0s 0.3s;
+  }
+
+  /* 放大后的信纸 */
+  .letter {
+    position: absolute; left: 50%; bottom: 0; 
+    width: 280px;  
+    height: 360px; 
+    margin-left: -140px; 
+    background: linear-gradient(180deg, #fffefb 0%, #fdf9f1 100%);
+    border: 1px solid rgba(190, 168, 135, 0.38);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1), 0 10px 28px rgba(0, 0, 0, 0.3);
+    transform-origin: 50% 100%; 
+    transform: translateY(0) scale(0.18); 
+    transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2; display: flex; align-items: center; justify-content: center; overflow: hidden;
+  }
+
+  .envelope.open .letter {
+    /* 【修改这里】：数值改成了 -50px，让信纸降得更低 */
+    transform: translateY(-50px) scale(1);
+    transition: transform 0.95s cubic-bezier(0.34, 1.1, 0.4, 1) 0.35s;
+    z-index: 6;
+  }
+
+  /* 文字排版 */
+  .msg {
+    font-family: 'Ma Shan Zheng', 'STKaiti', 'Kaiti SC', 'KaiTi', '楷体', serif;
+    font-size: 42px; line-height: 1.4; color: #4a3c2e;
+    letter-spacing: 0.1em; text-indent: 0.1em; text-align: center;
+    opacity: 0; filter: blur(5px); transform: translateY(12px);
+    transition: opacity 0.9s ease 1s, transform 0.9s ease 1s, filter 0.9s ease 1s;
+  }
+
+  .envelope.open .msg { opacity: 1; filter: blur(0); transform: translateY(0); }
+
+  /* 提示文字 */
+  .hint {
+    position: absolute; left: 50%; bottom: -54px; transform: translateX(-50%);
+    font-family: 'STKaiti', 'Kaiti SC', 'KaiTi', '楷体', serif;
+    font-size: 13px; letter-spacing: 0.42em; text-indent: 0.42em;
+    color: #888888; white-space: nowrap;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    animation: breathe 3.2s ease-in-out infinite;
+  }
+
+  .envelope.open ~ .hint { opacity: 0; transform: translateX(-50%) translateY(6px); }
+
+  @keyframes breathe { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+</style>
+</head>
+<body>
+  <div class="scene">
+    <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="打开信封">
+      <div class="env-back"></div>
+      <div class="letter">
+        <p class="msg">你好，<br>很高兴认识你，小鱼</p>
+      </div>
+      <div class="pocket"></div>
+      <div class="flap"></div>
+    </div>
+    <p class="hint">轻触 · 开启</p>
+  </div>
+
+  <script>
+    const envelope = document.getElementById('envelope');
+    envelope.addEventListener('click', () => {
+      envelope.classList.toggle('open');
+    });
+  </script>
+</body>
+</html>
