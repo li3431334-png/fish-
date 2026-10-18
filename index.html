@@ -11,7 +11,6 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; }
   
-  /* 背景黑色 */
   body {
     display: flex; align-items: center; justify-content: center;
     background: radial-gradient(120% 100% at 50% 0%, #222222 0%, #111111 50%, #000000 100%);
@@ -28,13 +27,65 @@
     z-index: -1; pointer-events: none;
   }
 
+  /* ---------- 纯 CSS 花瓣雨 ---------- */
+  .petals-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+    overflow: hidden;
+    display: none; /* 默认隐藏 */
+  }
+  
+  /* 只有信封打开时，才显示花瓣 */
+  .envelope.open ~ .petals-container {
+    display: block;
+  }
+
+  .petal {
+    position: absolute;
+    top: -20px;
+    background: linear-gradient(135deg, #8bc6ff, #3f8cf5);
+    border-radius: 50% 0 50% 50%;
+    box-shadow: 0 0 8px rgba(139, 198, 255, 0.4);
+    animation: fall linear infinite;
+  }
+
+  /* 用 nth-child 给每片花瓣分配不同的位置和速度，形成错落感 */
+  .petal:nth-child(1) { left: 5%; width: 10px; height: 14px; animation-duration: 4s; animation-delay: 0s; }
+  .petal:nth-child(2) { left: 15%; width: 14px; height: 20px; animation-duration: 6s; animation-delay: 1.5s; }
+  .petal:nth-child(3) { left: 25%; width: 8px; height: 12px; animation-duration: 5s; animation-delay: 0.5s; }
+  .petal:nth-child(4) { left: 35%; width: 12px; height: 18px; animation-duration: 7s; animation-delay: 2s; }
+  .petal:nth-child(5) { left: 45%; width: 9px; height: 13px; animation-duration: 4.5s; animation-delay: 1s; }
+  .petal:nth-child(6) { left: 55%; width: 15px; height: 22px; animation-duration: 6.5s; animation-delay: 0.2s; }
+  .petal:nth-child(7) { left: 65%; width: 11px; height: 16px; animation-duration: 5.5s; animation-delay: 1.8s; }
+  .petal:nth-child(8) { left: 75%; width: 13px; height: 19px; animation-duration: 8s; animation-delay: 0.8s; }
+  .petal:nth-child(9) { left: 85%; width: 8px; height: 12px; animation-duration: 4s; animation-delay: 2.5s; }
+  .petal:nth-child(10) { left: 95%; width: 12px; height: 18px; animation-duration: 6s; animation-delay: 1.2s; }
+  .petal:nth-child(11) { left: 10%; width: 10px; height: 15px; animation-duration: 5s; animation-delay: 3s; }
+  .petal:nth-child(12) { left: 30%; width: 14px; height: 21px; animation-duration: 7s; animation-delay: 0.6s; }
+  .petal:nth-child(13) { left: 60%; width: 9px; height: 14px; animation-duration: 4.5s; animation-delay: 2.2s; }
+  .petal:nth-child(14) { left: 80%; width: 11px; height: 17px; animation-duration: 6s; animation-delay: 1.8s; }
+  .petal:nth-child(15) { left: 50%; width: 15px; height: 23px; animation-duration: 8s; animation-delay: 0.4s; }
+
+  /* 下落并带有左右摇摆的动画 */
+  @keyframes fall {
+    0% { top: -10%; transform: translateX(0) rotate(0deg); opacity: 1; }
+    50% { transform: translateX(20px) rotate(90deg); }
+    100% { top: 110%; transform: translateX(-20px) rotate(180deg); opacity: 0; }
+  }
+
+  /* --------------------------------- */
+
   .envelope {
     position: relative; width: 100%; height: 100%;
     perspective: 900px; cursor: pointer; outline: none;
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* 信封背板白色 */
   .env-back {
     position: absolute; inset: 0;
     background: linear-gradient(165deg, #ffffff 0%, #e6e6e6 100%);
@@ -46,7 +97,6 @@
     box-shadow: 0 0 60px rgba(255, 255, 255, 0.25), 0 26px 54px -16px rgba(0, 0, 0, 0.9);
   }
 
-  /* 信封正面口袋白色 */
   .pocket {
     position: absolute; inset: 0;
     background: linear-gradient(180deg, #ffffff 0%, #d9d9d9 100%);
@@ -56,7 +106,6 @@
     z-index: 3;
   }
 
-  /* 信封盖白色 */
   .flap {
     position: absolute; top: 0; left: 0; width: 100%; height: 96px;
     background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%);
@@ -69,75 +118,4 @@
 
   .envelope.open .flap {
     transform: rotateX(-180deg); z-index: 0;
-    transition: transform 0.72s cubic-bezier(0.65, 0.05, 0.36, 1), z-index 0s 0.3s;
-  }
-
-  /* 放大后的信纸 */
-  .letter {
-    position: absolute; left: 50%; bottom: 0; 
-    width: 280px;  
-    height: 360px; 
-    margin-left: -140px; 
-    background: linear-gradient(180deg, #fffefb 0%, #fdf9f1 100%);
-    border: 1px solid rgba(190, 168, 135, 0.38);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1), 0 10px 28px rgba(0, 0, 0, 0.3);
-    transform-origin: 50% 100%; 
-    transform: translateY(0) scale(0.18); 
-    transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 2; display: flex; align-items: center; justify-content: center; overflow: hidden;
-  }
-
-  .envelope.open .letter {
-    /* 【修改这里】：数值改成了 -50px，让信纸降得更低 */
-    transform: translateY(-50px) scale(1);
-    transition: transform 0.95s cubic-bezier(0.34, 1.1, 0.4, 1) 0.35s;
-    z-index: 6;
-  }
-
-  /* 文字排版 */
-  .msg {
-    font-family: 'Ma Shan Zheng', 'STKaiti', 'Kaiti SC', 'KaiTi', '楷体', serif;
-    font-size: 42px; line-height: 1.4; color: #4a3c2e;
-    letter-spacing: 0.1em; text-indent: 0.1em; text-align: center;
-    opacity: 0; filter: blur(5px); transform: translateY(12px);
-    transition: opacity 0.9s ease 1s, transform 0.9s ease 1s, filter 0.9s ease 1s;
-  }
-
-  .envelope.open .msg { opacity: 1; filter: blur(0); transform: translateY(0); }
-
-  /* 提示文字 */
-  .hint {
-    position: absolute; left: 50%; bottom: -54px; transform: translateX(-50%);
-    font-family: 'STKaiti', 'Kaiti SC', 'KaiTi', '楷体', serif;
-    font-size: 13px; letter-spacing: 0.42em; text-indent: 0.42em;
-    color: #888888; white-space: nowrap;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    animation: breathe 3.2s ease-in-out infinite;
-  }
-
-  .envelope.open ~ .hint { opacity: 0; transform: translateX(-50%) translateY(6px); }
-
-  @keyframes breathe { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
-</style>
-</head>
-<body>
-  <div class="scene">
-    <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="打开信封">
-      <div class="env-back"></div>
-      <div class="letter">
-        <p class="msg">你好，<br>我是芙，很高兴认识你</p>
-      </div>
-      <div class="pocket"></div>
-      <div class="flap"></div>
-    </div>
-    <p class="hint">轻触 · 开启</p>
-  </div>
-
-  <script>
-    const envelope = document.getElementById('envelope');
-    envelope.addEventListener('click', () => {
-      envelope.classList.toggle('open');
-    });
-  </script>
-</body>
-</html>
+    transi
