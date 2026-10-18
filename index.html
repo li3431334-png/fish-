@@ -11,7 +11,6 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; }
   
-  /* 背景黑色 */
   body {
     display: flex; align-items: center; justify-content: center;
     background: radial-gradient(120% 100% at 50% 0%, #222222 0%, #111111 50%, #000000 100%);
@@ -20,12 +19,45 @@
 
   .scene { position: relative; width: 300px; height: 200px; }
 
-  /* 微弱的白光 */
   .scene::before {
     content: ''; position: absolute; left: 50%; top: 50%;
     width: 440px; height: 440px; transform: translate(-50%, -50%);
     background: radial-gradient(circle, rgba(255, 255, 255, 0.08), transparent 68%);
     z-index: -1; pointer-events: none;
+  }
+
+  /* 花瓣容器，用最简单的方式固定 */
+  .petals-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+    overflow: hidden;
+    display: none; 
+  }
+  
+  .envelope.open ~ .petals-container {
+    display: block;
+  }
+
+  /* 极简花瓣 */
+  .petal {
+    position: absolute;
+    top: -20px;
+    background: #64b5f6; 
+    border-radius: 50% 0 50% 50%;
+    animation-name: fall;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
+  /* 只有下落和透明度变化，没有复杂的3D旋转，老手机绝对能跑 */
+  @keyframes fall {
+    0% { top: -10%; opacity: 1; }
+    100% { top: 110%; opacity: 0; }
   }
 
   .envelope {
@@ -34,7 +66,6 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* 信封背板白色 */
   .env-back {
     position: absolute; inset: 0;
     background: linear-gradient(165deg, #ffffff 0%, #e6e6e6 100%);
@@ -42,11 +73,6 @@
     z-index: 1; transition: box-shadow 0.45s ease;
   }
 
-  .envelope:hover .env-back {
-    box-shadow: 0 0 60px rgba(255, 255, 255, 0.25), 0 26px 54px -16px rgba(0, 0, 0, 0.9);
-  }
-
-  /* 信封正面口袋白色 */
   .pocket {
     position: absolute; inset: 0;
     background: linear-gradient(180deg, #ffffff 0%, #d9d9d9 100%);
@@ -56,7 +82,6 @@
     z-index: 3;
   }
 
-  /* 信封盖白色 */
   .flap {
     position: absolute; top: 0; left: 0; width: 100%; height: 96px;
     background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%);
@@ -72,12 +97,9 @@
     transition: transform 0.72s cubic-bezier(0.65, 0.05, 0.36, 1), z-index 0s 0.3s;
   }
 
-  /* 放大后的信纸 */
   .letter {
     position: absolute; left: 50%; bottom: 0; 
-    width: 280px;  
-    height: 360px; 
-    margin-left: -140px; 
+    width: 280px; height: 360px; margin-left: -140px; 
     background: linear-gradient(180deg, #fffefb 0%, #fdf9f1 100%);
     border: 1px solid rgba(190, 168, 135, 0.38);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1), 0 10px 28px rgba(0, 0, 0, 0.3);
@@ -88,13 +110,11 @@
   }
 
   .envelope.open .letter {
-    /* 【修改这里】：数值改成了 -50px，让信纸降得更低 */
     transform: translateY(-50px) scale(1);
     transition: transform 0.95s cubic-bezier(0.34, 1.1, 0.4, 1) 0.35s;
     z-index: 6;
   }
 
-  /* 文字排版 */
   .msg {
     font-family: 'Ma Shan Zheng', 'STKaiti', 'Kaiti SC', 'KaiTi', '楷体', serif;
     font-size: 42px; line-height: 1.4; color: #4a3c2e;
@@ -105,7 +125,6 @@
 
   .envelope.open .msg { opacity: 1; filter: blur(0); transform: translateY(0); }
 
-  /* 提示文字 */
   .hint {
     position: absolute; left: 50%; bottom: -54px; transform: translateX(-50%);
     font-family: 'STKaiti', 'Kaiti SC', 'KaiTi', '楷体', serif;
@@ -125,19 +144,7 @@
     <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="打开信封">
       <div class="env-back"></div>
       <div class="letter">
-        <p class="msg">你好，<br>我是芙，很高兴认识你</p>
+        <p class="msg">你好，<br>我是芙</p>
       </div>
       <div class="pocket"></div>
-      <div class="flap"></div>
-    </div>
-    <p class="hint">轻触 · 开启</p>
-  </div>
-
-  <script>
-    const envelope = document.getElementById('envelope');
-    envelope.addEventListener('click', () => {
-      envelope.classList.toggle('open');
-    });
-  </script>
-</body>
-</html>
+      <div class="flap"></di
